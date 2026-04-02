@@ -1,5 +1,5 @@
 struct stat;
-
+struct ptreeinfo;
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
@@ -23,6 +23,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int trace(int);
+int ptree(struct ptreeinfo*, int);
 
 // ulib.c
 int stat(const char*, struct stat*);
@@ -39,6 +40,7 @@ int atoi(const char*);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
 int trace(int);
+
 
 
 // umalloc.c

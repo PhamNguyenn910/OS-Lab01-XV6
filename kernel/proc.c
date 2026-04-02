@@ -305,7 +305,7 @@ fork(void)
   // ke thua id theo doi tu cha sang con
   np->traceID = p->traceID;
   // Cause fork to return 0 in the child.
-  np->trapframe->a0 = 0;
+  np->trapframe->a0 = 0;  
 
   // increment reference counts on open file descriptors.
   for(i = 0; i < NOFILE; i++)

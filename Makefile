@@ -204,6 +204,7 @@ UPROGS=\
 	$U/_demo_line\
 	$U/_trace\
 	$U/_testtag\
+	$U/_pstree\
 
 
 
