@@ -91,3 +91,26 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+#include "sysinfo.h"
+
+uint64
+sys_sysinfo(void)
+{
+    struct sysinfo info;
+    uint64 addr;
+
+    // Get user-space pointer argument
+    /*if (argaddr(0, &addr) <0)
+        return -1;*/
+    argaddr(0, &addr);
+
+    info.freemem = getfreemem();
+    info.nproc   = getnproc();
+
+    if (copyout(myproc()->pagetable, addr,
+                (char *)&info, sizeof(info)) < 0)
+        return -1;
+
+    return 0;
+}

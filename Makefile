@@ -194,7 +194,11 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
-
+	$U/_sleeptest\
+	$U/_OSTest1\
+	$U/_cp\
+	$U/_diff\
+	$U/_sysinfotest\
 
 
 
