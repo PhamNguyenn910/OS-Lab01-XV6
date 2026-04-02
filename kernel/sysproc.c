@@ -5,6 +5,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "ptree.h"
 
 uint64
 sys_exit(void)
@@ -91,3 +92,27 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_ptree(void)
+{
+  uint64 u_buf;
+  int max;
+  int count;
+  struct ptreeinfo k_buf[NPROC];
+
+  argaddr(0, &u_buf);
+  argint(1, &max);
+
+  if(u_buf == 0 || max <= 0)
+    return -1;
+
+  count = getprocs(k_buf, max);
+
+  if(copyout(myproc()->pagetable, u_buf, (char *)k_buf,
+             count * sizeof(struct ptreeinfo)) < 0)
+    return -1;
+
+  return count;
+}
+

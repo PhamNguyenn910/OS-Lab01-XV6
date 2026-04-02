@@ -196,9 +196,8 @@ UPROGS=\
 	$U/_zombie\
 	$U/_mysleep\
 	$U/_pingpong\
-
-
-
+	$U/_primes\
+	$U/_pstree\
 
 ifeq ($(LAB),syscall)
 UPROGS += \
