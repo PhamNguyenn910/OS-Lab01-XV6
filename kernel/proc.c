@@ -299,13 +299,8 @@ fork(void)
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 
-
-  // trace
-  memmove(np->trapframe, p->trapframe, sizeof(struct trapframe));
-  // ke thua id theo doi tu cha sang con
-  np->traceID = p->traceID;
   // Cause fork to return 0 in the child.
-  np->trapframe->a0 = 0;  
+  np->trapframe->a0 = 0;
 
   // increment reference counts on open file descriptors.
   for(i = 0; i < NOFILE; i++)
@@ -326,10 +321,6 @@ fork(void)
   acquire(&np->lock);
   np->state = RUNNABLE;
   release(&np->lock);
-
-
-
-
 
   return pid;
 }
@@ -680,12 +671,12 @@ void
 procdump(void)
 {
   static char *states[] = {
-  [UNUSED]    "unused",
-  [USED]      "used",
-  [SLEEPING]  "sleep ",
-  [RUNNABLE]  "runble",
-  [RUNNING]   "run   ",
-  [ZOMBIE]    "zombie"
+  [UNUSED]   = "unused",
+  [USED]     = "used",
+  [SLEEPING] = "sleep ",
+  [RUNNABLE] = "runble",
+  [RUNNING]  = "run   ",
+  [ZOMBIE]   = "zombie"
   };
   struct proc *p;
   char *state;
@@ -701,4 +692,21 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+//Return the number of non-UNUSED processes
+uint64
+getnproc(void)
+{
+    struct proc *p;
+    uint64 count = 0;
+
+    for(p = proc; p < &proc[NPROC]; p++) {
+        acquire(&p->lock);
+        if(p->state != UNUSED) {
+            count++;
+        }
+        release(&p->lock);
+    }
+    return count;
 }

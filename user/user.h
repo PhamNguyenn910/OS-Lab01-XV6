@@ -1,5 +1,6 @@
 struct stat;
 struct ptreeinfo;
+struct sysinfo;
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
@@ -24,6 +25,7 @@ int sleep(int);
 int uptime(void);
 int trace(int);
 int ptree(struct ptreeinfo*, int);
+int sysinfo(struct sysinfo *);
 
 // ulib.c
 int stat(const char*, struct stat*);
@@ -39,7 +41,7 @@ void* memset(void*, int, uint);
 int atoi(const char*);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
-int trace(int);
+
 
 
 
