@@ -203,7 +203,6 @@ UPROGS=\
 	$U/_primes\
 	$U/_demo_line\
 	$U/_trace\
-	$U/_testtag\
 	$U/_pstree\
 	$U/_sysinfotest\
 
