@@ -3,34 +3,50 @@
 #include "user/user.h"
 #include "kernel/ptree.h"
 
-// Hàm đệ quy để in cây tiến trình
-void print_tree(int ppid, int indent, struct ptreeinfo *buf, int count) {
-    for (int i = 0; i < count; i++) {
-        if (buf[i].ppid == ppid) {
-            // Tạo khoảng thụt lề
-            for (int j = 0; j < indent; j++) printf("  ");
-            
-printf("|-- %d %s (state=%d, mem=%d)\n", 
-       buf[i].pid, buf[i].name, buf[i].state, (int)buf[i].memsize);
-            
-            // Tìm các con của tiến trình hiện tại
-            print_tree(buf[i].pid, indent + 1, buf, count);
-        }
-    }
+static int
+has_parent_in_buf(struct ptreeinfo *buf, int count, int ppid)
+{
+  for(int i = 0; i < count; i++){
+    if(buf[i].pid == ppid)
+      return 1;
+  }
+  return 0;
 }
 
-int main() {
-    struct ptreeinfo buf[64];
-    int count = ptree(buf, 64);
-    
-    if (count < 0) {
-        printf("pstree: loi goi system call\n");
-        exit(1);
-    }
+static void
+print_children(struct ptreeinfo *buf, int count, int parent_pid, int indent)
+{
+  for(int i = 0; i < count; i++){
+    if(buf[i].ppid == parent_pid){
+      for(int j = 0; j < indent; j++)
+        printf(" ");
 
-    printf("Cay tien trinh he thong:\n");
-    // Bắt đầu in từ tiến trình gốc (ppid = 0)
-    print_tree(0, 0, buf, count);
-    
-    exit(0);
+      printf("%d %s state=%d mem=%d\n",
+             buf[i].pid, buf[i].name, buf[i].state, (int)buf[i].memsize);
+
+      print_children(buf, count, buf[i].pid, indent + 1);
+    }
+  }
+}
+
+int
+main(void)
+{
+  struct ptreeinfo buf[64];
+  int count = ptree(buf, 64);
+
+  if(count < 0){
+    printf("pstree: ptree failed\n");
+    exit(1);
+  }
+
+  for(int i = 0; i < count; i++){
+    if(buf[i].ppid == 0 || !has_parent_in_buf(buf, count, buf[i].ppid)){
+      printf("%d %s state=%d mem=%d\n",
+             buf[i].pid, buf[i].name, buf[i].state, (int)buf[i].memsize);
+      print_children(buf, count, buf[i].pid, 1);
+    }
+  }
+
+  exit(0);
 }

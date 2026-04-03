@@ -5,6 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "ptree.h"
 
 struct cpu cpus[NCPU];
 
@@ -124,7 +125,7 @@ allocproc(void)
 found:
   p->pid = allocpid();
   p->state = USED;
-
+  p->traceID = 0;
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -168,6 +169,7 @@ freeproc(struct proc *p)
   p->chan = 0;
   p->killed = 0;
   p->xstate = 0;
+  p->traceID = 0;
   p->state = UNUSED;
 }
 
@@ -298,7 +300,7 @@ fork(void)
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
-
+    np->traceID = p->traceID;
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
 
@@ -695,18 +697,27 @@ procdump(void)
 }
 
 //Return the number of non-UNUSED processes
-uint64
-getnproc(void)
+int
+getprocs(struct ptreeinfo *buf, int max)
 {
-    struct proc *p;
-    uint64 count = 0;
+  struct proc *p;
+  int count = 0;
+  int limit = max < NPROC ? max : NPROC;
 
-    for(p = proc; p < &proc[NPROC]; p++) {
-        acquire(&p->lock);
-        if(p->state != UNUSED) {
-            count++;
-        }
-        release(&p->lock);
+  for(p = proc; p < &proc[NPROC] && count < limit; p++){
+    acquire(&p->lock);
+
+    if(p->state != UNUSED){
+      buf[count].pid = p->pid;
+      buf[count].ppid = p->parent ? p->parent->pid : 0;
+      buf[count].state = p->state;
+      buf[count].memsize = p->sz;
+      safestrcpy(buf[count].name, p->name, sizeof(buf[count].name));
+      count++;
     }
-    return count;
+
+    release(&p->lock);
+  }
+
+  return count;
 }
