@@ -2,14 +2,15 @@
 #include "kernel/stat.h"
 #include "kernel/fcntl.h"
 #include "user/user.h"
-
+#include "kernel/memlayout.h"
+#include "kernel/riscv.h"
 //
 // wrapper so that it's OK if main() does not call exit().
 //
 void
 start()
 {
-  extern int main();
+extern int main();
   main();
   exit(0);
 }
@@ -144,4 +145,13 @@ void *
 memcpy(void *dst, const void *src, uint n)
 {
   return memmove(dst, src, n);
+}
+
+
+
+int
+ugetpid(void)
+{
+  struct usyscall *u = (struct usyscall *)USYSCALL;
+  return u->pid;
 }

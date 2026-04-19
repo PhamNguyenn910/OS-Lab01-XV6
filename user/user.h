@@ -25,6 +25,7 @@ int sleep(int);
 int uptime(void);
 int trace(int);
 int ptree(struct ptreeinfo*, int);
+int ugetpid(void);
 int sysinfo(struct sysinfo *);
 
 // ulib.c
