@@ -28,9 +28,7 @@ int trace(int);
 int ptree(struct ptreeinfo*, int);
 int ugetpid(void);
 int sysinfo(struct sysinfo *);
-int pgaccess(void *base, int npages, unsigned int *mask);
 struct ptreeinfo;
-int ptree(struct ptreeinfo*, int);
 int pgaccess(void *base, int npages, void *mask);
 
 

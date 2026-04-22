@@ -178,36 +178,34 @@ mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
 .PRECIOUS: %.o
 
 UPROGS=\
-	$U/_cat\
-	$U/_echo\
-	$U/_forktest\
-	$U/_grep\
-	$U/_init\
-	$U/_kill\
-	$U/_ln\
-	$U/_ls\
-	$U/_mkdir\
-	$U/_rm\
-	$U/_sh\
-	$U/_stressfs\
-	$U/_usertests\
-	$U/_grind\
-	$U/_wc\
-	$U/_zombie\
-	$U/_sleeptest\
-	$U/_pingpong\
-	$U/_tree\
-	$U/_du\
-	$U/_diff\
-	$U/_cp\
-	$U/_primes\
-	$U/_demo_line\
-	$U/_trace\
-	$U/_pstree\
-	$U/_pgtbltest\
-	$U/_ugetpidtest\
-	$U/_sysinfotest\
-
+  $U/_cat\
+  $U/_echo\
+  $U/_forktest\
+  $U/_grep\
+  $U/_init\
+  $U/_kill\
+  $U/_ln\
+  $U/_ls\
+  $U/_mkdir\
+  $U/_rm\
+  $U/_sh\
+  $U/_stressfs\
+  $U/_usertests\
+  $U/_grind\
+  $U/_wc\
+  $U/_zombie\
+  $U/_sleeptest\
+  $U/_pingpong\
+  $U/_tree\
+  $U/_du\
+  $U/_diff\
+  $U/_cp\
+  $U/_demo_line\
+  $U/_trace\
+  $U/_pstree\
+  $U/_pgtbltest\
+  $U/_ugetpidtest\
+  $U/_sysinfotest
 
 
 ifeq ($(LAB),syscall)

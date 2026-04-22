@@ -41,5 +41,3 @@ entry("trace");
 entry("ptree");
 entry("sysinfo");
 entry("pgaccess");
-entry("ptree");
-entry("pgaccess");

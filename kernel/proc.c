@@ -706,14 +706,8 @@ procdump(void)
   [USED]     = "used",
   [SLEEPING] = "sleep ",
   [RUNNABLE] = "runble",
-  [RUNNING]  = "run   ",
-  [ZOMBIE]   = "zombie"
-  [UNUSED]    "unused",
-  [USED]      "used",
-  [SLEEPING]  "sleep ",
-  [RUNNABLE]  "runble",
-  [RUNNING]   "run   ",
-  [ZOMBIE]    "zombie"
+  [RUNNING]  = "run",
+  [ZOMBIE]   = "zombie",
   };
   struct proc *p;
   char *state;
