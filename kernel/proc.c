@@ -130,6 +130,7 @@ found:
   p->traceID = 0;
   p->trapframe = 0;
   p->usyscall = 0;
+
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -215,15 +216,16 @@ proc_pagetable(struct proc *p)
   if(mappages(pagetable, USYSCALL, PGSIZE,
               (uint64)(p->usyscall), PTE_R | PTE_U) < 0){
     uvmunmap(pagetable, TRAMPOLINE, 1, 0);
-    uvmunmap(pagetable, TRAPFRAME, 1, 0);
     uvmfree(pagetable, 0);
     return 0;
   }
+
 
   // map the trapframe page just below the trampoline page, for
   // trampoline.S.
   if(mappages(pagetable, TRAPFRAME, PGSIZE,
               (uint64)(p->trapframe), PTE_R | PTE_W) < 0){
+    uvmunmap(pagetable, USYSCALL, 1, 0);
     uvmunmap(pagetable, TRAMPOLINE, 1, 0);
     uvmfree(pagetable, 0);
     return 0;
@@ -327,6 +329,7 @@ fork(void)
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
     np->traceID = p->traceID;
+
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
 
@@ -705,6 +708,12 @@ procdump(void)
   [RUNNABLE] = "runble",
   [RUNNING]  = "run   ",
   [ZOMBIE]   = "zombie"
+  [UNUSED]    "unused",
+  [USED]      "used",
+  [SLEEPING]  "sleep ",
+  [RUNNABLE]  "runble",
+  [RUNNING]   "run   ",
+  [ZOMBIE]    "zombie"
   };
   struct proc *p;
   char *state;

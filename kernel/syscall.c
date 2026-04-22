@@ -101,19 +101,16 @@ extern uint64 sys_unlink(void);
 extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
-<<<<<<< HEAD
 extern uint64 sys_trace(void);
 extern uint64 sys_ptree(void);
 extern uint64 sys_sysinfo(void);
-=======
+extern uint64 sys_pgaccess(void);
 extern uint64 sys_ptree(void);
 extern uint64 sys_pgaccess(void);
->>>>>>> origin/pgaccess-progress
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
 static uint64 (*syscalls[])(void) = {
-<<<<<<< HEAD
 [SYS_fork]     = sys_fork,
 [SYS_exit]     = sys_exit,
 [SYS_wait]     = sys_wait,
@@ -138,6 +135,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_trace]    = sys_trace,
 [SYS_ptree]    = sys_ptree,
 [SYS_sysinfo]  = sys_sysinfo,
+[SYS_pgaccess] = sys_pgaccess,
 };
 
 static char *syscall_names[] = {
@@ -165,7 +163,7 @@ static char *syscall_names[] = {
   [SYS_trace]   = "trace",
   [SYS_ptree]   = "ptree",
   [SYS_sysinfo] = "sysinfo",
-=======
+  [SYS_pgaccess] = "pgaccess",
 [SYS_fork]    sys_fork,
 [SYS_exit]    sys_exit,
 [SYS_wait]    sys_wait,
@@ -189,7 +187,6 @@ static char *syscall_names[] = {
 [SYS_close]   sys_close,
 [SYS_ptree] sys_ptree,
 [SYS_pgaccess] = sys_pgaccess,
->>>>>>> origin/pgaccess-progress
 };
 
 void
@@ -200,7 +197,6 @@ syscall(void)
 
   num = p->trapframe->a7;
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
-<<<<<<< HEAD
     // Thực thi system call và lưu kết quả trả về vào a0
     p->trapframe->a0 = syscalls[num]();
     
@@ -209,19 +205,14 @@ syscall(void)
     if ((p->traceID & (1 << num)) != 0) {
         printf("%d: syscall %s -> %ld\n", p->pid, syscall_names[num], p->trapframe->a0);
     }
-=======
     // Use num to lookup the system call function for num, call it,
     // and store its return value in p->trapframe->a0
     p->trapframe->a0 = syscalls[num]();
->>>>>>> origin/pgaccess-progress
   } else {
     printf("%d %s: unknown sys call %d\n",
             p->pid, p->name, num);
     p->trapframe->a0 = -1;
   }
-<<<<<<< HEAD
-}
-=======
 }
 
->>>>>>> origin/pgaccess-progress
+
