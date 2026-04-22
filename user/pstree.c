@@ -33,7 +33,7 @@ int
 main(void)
 {
   struct ptreeinfo buf[64];
-  int count = ptree(buf, 64);
+  int count = ptree(buf, 2);
 
   if(count < 0){
     printf("pstree: ptree failed\n");

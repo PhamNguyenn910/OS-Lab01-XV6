@@ -24,6 +24,7 @@ int sleep(int);
 int uptime(void);
 struct ptreeinfo;
 int ptree(struct ptreeinfo*, int);
+int pgaccess(void *base, int npages, void *mask);
 
 
 // ulib.c

@@ -1,0 +1,249 @@
+diff --git a/Makefile b/Makefile
+index e849986..5428fe1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -196,9 +196,8 @@ UPROGS=\
+ 	$U/_zombie\
+ 	$U/_mysleep\
+ 	$U/_pingpong\
+-
+-
+-
++	$U/_primes\
++	$U/_pstree\
+ 
+ ifeq ($(LAB),syscall)
+ UPROGS += \
+diff --git a/kernel/defs.h b/kernel/defs.h
+index d1b6bb9..9ca9c5e 100644
+--- a/kernel/defs.h
++++ b/kernel/defs.h
+@@ -8,6 +8,7 @@ struct spinlock;
+ struct sleeplock;
+ struct stat;
+ struct superblock;
++struct ptreeinfo;
+ 
+ // bio.c
+ void            binit(void);
+@@ -187,3 +188,5 @@ void            virtio_disk_intr(void);
+ 
+ // number of elements in fixed-size array
+ #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
++
++int getprocs(struct ptreeinfo *buf, int max);
+\ No newline at end of file
+diff --git a/kernel/proc.c b/kernel/proc.c
+index 130d9ce..5f3fa27 100644
+--- a/kernel/proc.c
++++ b/kernel/proc.c
+@@ -5,6 +5,7 @@
+ #include "spinlock.h"
+ #include "proc.h"
+ #include "defs.h"
++#include "ptree.h"
+ 
+ struct cpu cpus[NCPU];
+ 
+@@ -693,3 +694,28 @@ procdump(void)
+     printf("\n");
+   }
+ }
++
++int
++getprocs(struct ptreeinfo *buf, int max)
++{
++  struct proc *p;
++  int count = 0;
++  int limit = max < NPROC ? max : NPROC;
++
++  for(p = proc; p < &proc[NPROC] && count < limit; p++){
++    acquire(&p->lock);
++
++    if(p->state != UNUSED){
++      buf[count].pid = p->pid;
++      buf[count].ppid = p->parent ? p->parent->pid : 0;
++      buf[count].state = p->state;
++      buf[count].memsize = p->sz;
++      safestrcpy(buf[count].name, p->name, sizeof(buf[count].name));
++      count++;
++    }
++
++    release(&p->lock);
++  }
++
++  return count;
++}
+\ No newline at end of file
+diff --git a/kernel/ptree.h b/kernel/ptree.h
+new file mode 100644
+index 0000000..17aa57d
+--- /dev/null
++++ b/kernel/ptree.h
+@@ -0,0 +1,13 @@
++#ifndef PTREE_H
++#define PTREE_H
++#include "types.h"
++
++struct ptreeinfo {
++    int pid;          // Process ID
++    int ppid;         // Parent Process ID
++    int state;        // Trạng thái (RUNNING, SLEEPING, ...)
++    uint64 memsize;   // Kích thước bộ nhớ (bytes)
++    char name[16];    // Tên tiến trình
++};
++
++#endif
+\ No newline at end of file
+diff --git a/kernel/syscall.c b/kernel/syscall.c
+index ed65409..c095ab9 100644
+--- a/kernel/syscall.c
++++ b/kernel/syscall.c
+@@ -101,6 +101,7 @@ extern uint64 sys_unlink(void);
+ extern uint64 sys_link(void);
+ extern uint64 sys_mkdir(void);
+ extern uint64 sys_close(void);
++extern uint64 sys_ptree(void);
+ 
+ // An array mapping syscall numbers from syscall.h
+ // to the function that handles the system call.
+@@ -126,6 +127,7 @@ static uint64 (*syscalls[])(void) = {
+ [SYS_link]    sys_link,
+ [SYS_mkdir]   sys_mkdir,
+ [SYS_close]   sys_close,
++[SYS_ptree] sys_ptree,
+ };
+ 
+ void
+diff --git a/kernel/syscall.h b/kernel/syscall.h
+index bc5f356..fda6e5a 100644
+--- a/kernel/syscall.h
++++ b/kernel/syscall.h
+@@ -20,3 +20,4 @@
+ #define SYS_link   19
+ #define SYS_mkdir  20
+ #define SYS_close  21
++#define SYS_ptree 24
+\ No newline at end of file
+diff --git a/kernel/sysproc.c b/kernel/sysproc.c
+index 3b4d5bd..a13aead 100644
+--- a/kernel/sysproc.c
++++ b/kernel/sysproc.c
+@@ -5,6 +5,7 @@
+ #include "memlayout.h"
+ #include "spinlock.h"
+ #include "proc.h"
++#include "ptree.h"
+ 
+ uint64
+ sys_exit(void)
+@@ -91,3 +92,27 @@ sys_uptime(void)
+   release(&tickslock);
+   return xticks;
+ }
++
++uint64
++sys_ptree(void)
++{
++  uint64 u_buf;
++  int max;
++  int count;
++  struct ptreeinfo k_buf[NPROC];
++
++  argaddr(0, &u_buf);
++  argint(1, &max);
++
++  if(u_buf == 0 || max <= 0)
++    return -1;
++
++  count = getprocs(k_buf, max);
++
++  if(copyout(myproc()->pagetable, u_buf, (char *)k_buf,
++             count * sizeof(struct ptreeinfo)) < 0)
++    return -1;
++
++  return count;
++}
++
+diff --git a/user/pstree.c b/user/pstree.c
+new file mode 100644
+index 0000000..3942f60
+--- /dev/null
++++ b/user/pstree.c
+@@ -0,0 +1,52 @@
++#include "kernel/types.h"
++#include "kernel/stat.h"
++#include "user/user.h"
++#include "kernel/ptree.h"
++
++static int
++has_parent_in_buf(struct ptreeinfo *buf, int count, int ppid)
++{
++  for(int i = 0; i < count; i++){
++    if(buf[i].pid == ppid)
++      return 1;
++  }
++  return 0;
++}
++
++static void
++print_children(struct ptreeinfo *buf, int count, int parent_pid, int indent)
++{
++  for(int i = 0; i < count; i++){
++    if(buf[i].ppid == parent_pid){
++      for(int j = 0; j < indent; j++)
++        printf(" ");
++
++      printf("%d %s state=%d mem=%d\n",
++             buf[i].pid, buf[i].name, buf[i].state, (int)buf[i].memsize);
++
++      print_children(buf, count, buf[i].pid, indent + 1);
++    }
++  }
++}
++
++int
++main(void)
++{
++  struct ptreeinfo buf[64];
++  int count = ptree(buf, 64);
++
++  if(count < 0){
++    printf("pstree: ptree failed\n");
++    exit(1);
++  }
++
++  for(int i = 0; i < count; i++){
++    if(buf[i].ppid == 0 || !has_parent_in_buf(buf, count, buf[i].ppid)){
++      printf("%d %s state=%d mem=%d\n",
++             buf[i].pid, buf[i].name, buf[i].state, (int)buf[i].memsize);
++      print_children(buf, count, buf[i].pid, 1);
++    }
++  }
++
++  exit(0);
++}
+\ No newline at end of file
+diff --git a/user/user.h b/user/user.h
+index f16fe27..d12835b 100644
+--- a/user/user.h
++++ b/user/user.h
+@@ -22,6 +22,9 @@ int getpid(void);
+ char* sbrk(int);
+ int sleep(int);
+ int uptime(void);
++struct ptreeinfo;
++int ptree(struct ptreeinfo*, int);
++
+ 
+ // ulib.c
+ int stat(const char*, struct stat*);
+diff --git a/user/usys.pl b/user/usys.pl
+index 01e426e..60a6d22 100755
+--- a/user/usys.pl
++++ b/user/usys.pl
+@@ -36,3 +36,4 @@ entry("getpid");
+ entry("sbrk");
+ entry("sleep");
+ entry("uptime");
++entry("ptree");

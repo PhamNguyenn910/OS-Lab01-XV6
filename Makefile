@@ -193,11 +193,8 @@ UPROGS=\
 	$U/_usertests\
 	$U/_grind\
 	$U/_wc\
-	$U/_zombie\
-	$U/_mysleep\
-	$U/_pingpong\
-	$U/_primes\
 	$U/_pstree\
+	$U/_ptreetest\
 
 ifeq ($(LAB),syscall)
 UPROGS += \
