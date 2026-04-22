@@ -174,17 +174,11 @@ syscall(void)
 
   num = p->trapframe->a7;
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
-    // Thực thi system call và lưu kết quả trả về vào a0
     p->trapframe->a0 = syscalls[num]();
-    
-    // Kiểm tra xem system call hiện tại (num) có nằm trong mask không
-    // (1 << num) tạo ra một bit tại vị trí 'num'. Phép & dùng để kiểm tra bit đó có bật không.
+
     if ((p->traceID & (1 << num)) != 0) {
-        printf("%d: syscall %s -> %ld\n", p->pid, syscall_names[num], p->trapframe->a0);
+      printf("%d: syscall %s -> %ld\n", p->pid, syscall_names[num], p->trapframe->a0);
     }
-    // Use num to lookup the system call function for num, call it,
-    // and store its return value in p->trapframe->a0
-    p->trapframe->a0 = syscalls[num]();
   } else {
     printf("%d %s: unknown sys call %d\n",
             p->pid, p->name, num);
