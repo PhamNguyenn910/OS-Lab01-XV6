@@ -64,7 +64,10 @@ void            ramdiskrw(struct buf*);
 void*           kalloc(void);
 void            kfree(void *);
 void            kinit(void);
+<<<<<<< HEAD
 uint64          getfreemem(void);
+=======
+>>>>>>> origin/pgaccess-progress
 
 // log.c
 void            initlog(int, struct superblock*);
@@ -108,7 +111,10 @@ void            yield(void);
 int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
+<<<<<<< HEAD
 uint64          getnproc(void);
+=======
+>>>>>>> origin/pgaccess-progress
 
 // swtch.S
 void            swtch(struct context*, struct context*);
@@ -143,6 +149,10 @@ void            argaddr(int, uint64 *);
 int             fetchstr(uint64, char*, int);
 int             fetchaddr(uint64, uint64*);
 void            syscall();
+<<<<<<< HEAD
+=======
+uint64          sys_pgaccess(void);
+>>>>>>> origin/pgaccess-progress
 
 // trap.c
 extern uint     ticks;
@@ -176,7 +186,10 @@ uint64          walkaddr(pagetable_t, uint64);
 int             copyout(pagetable_t, uint64, char *, uint64);
 int             copyin(pagetable_t, char *, uint64, uint64);
 int             copyinstr(pagetable_t, char *, uint64, uint64);
+<<<<<<< HEAD
 void            vmprint(pagetable_t);
+=======
+>>>>>>> origin/pgaccess-progress
 
 // plic.c
 void            plicinit(void);
@@ -191,4 +204,8 @@ void            virtio_disk_intr(void);
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/pgaccess-progress
 int getprocs(struct ptreeinfo *buf, int max);

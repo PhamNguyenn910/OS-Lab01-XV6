@@ -5,7 +5,10 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+<<<<<<< HEAD
 #include "sysinfo.h"
+=======
+>>>>>>> origin/pgaccess-progress
 #include "ptree.h"
 
 uint64
@@ -95,6 +98,7 @@ sys_uptime(void)
 }
 
 uint64
+<<<<<<< HEAD
 sys_trace(void)
 {
   int mask;
@@ -109,6 +113,8 @@ sys_trace(void)
 }
 
 uint64
+=======
+>>>>>>> origin/pgaccess-progress
 sys_ptree(void)
 {
   uint64 u_buf;
@@ -131,6 +137,7 @@ sys_ptree(void)
   return count;
 }
 
+<<<<<<< HEAD
 uint64
 sys_sysinfo(void)
 {
@@ -151,4 +158,40 @@ sys_sysinfo(void)
         return -1;
 
     return 0;
+=======
+
+uint64
+sys_pgaccess(void)
+{
+  uint64 base;
+  uint64 mask_addr;
+  int npages;
+  uint64 mask = 0;
+  struct proc *p = myproc();
+
+  argaddr(0, &base);
+  argint(1, &npages);
+  argaddr(2, &mask_addr);
+
+  if(npages < 0 || npages > 64)
+    return -1;
+
+  for(int i = 0; i < npages; i++){
+    uint64 va = base + i * PGSIZE;
+    pte_t *pte = walk(p->pagetable, va, 0);
+
+    if(pte == 0)
+      continue;
+
+    if((*pte & PTE_V) && (*pte & PTE_A)){
+      mask |= (1L << i);
+      *pte &= ~PTE_A;
+    }
+  }
+
+  if(copyout(p->pagetable, mask_addr, (char *)&mask, sizeof(mask)) < 0)
+    return -1;
+
+  return 0;
+>>>>>>> origin/pgaccess-progress
 }

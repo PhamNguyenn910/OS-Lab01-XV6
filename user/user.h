@@ -1,6 +1,10 @@
 struct stat;
+<<<<<<< HEAD
 struct ptreeinfo;
 struct sysinfo;
+=======
+
+>>>>>>> origin/pgaccess-progress
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
@@ -23,10 +27,17 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+<<<<<<< HEAD
 int trace(int);
 int ptree(struct ptreeinfo*, int);
 int ugetpid(void);
 int sysinfo(struct sysinfo *);
+=======
+struct ptreeinfo;
+int ptree(struct ptreeinfo*, int);
+int pgaccess(void *base, int npages, void *mask);
+
+>>>>>>> origin/pgaccess-progress
 
 // ulib.c
 int stat(const char*, struct stat*);
@@ -43,9 +54,12 @@ int atoi(const char*);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> origin/pgaccess-progress
 // umalloc.c
 void* malloc(uint);
 void free(void*);
