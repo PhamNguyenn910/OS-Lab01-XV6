@@ -457,10 +457,10 @@ static void vmprint_helper(pagetable_t pagetable, int depth) {
       continue;
 
     for (int d = 0; d <= depth; d++)
-      printf("..");
+      printf(".. ");
 
     uint64 pa = PTE2PA(pte);
-    printf("%d: pte %p pa %p\n", i, (void*)pte, (void*)pa);  // ← cast both to void*
+    printf("..%d: pte %p pa %p\n", i, (void*)pte, (void*)pa);  // ← cast both to void*
 
     if ((pte & (PTE_R | PTE_W | PTE_X)) == 0) {
       vmprint_helper((pagetable_t)pa, depth + 1);
