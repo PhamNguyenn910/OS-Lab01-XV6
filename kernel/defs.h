@@ -145,8 +145,6 @@ void            argaddr(int, uint64 *);
 int             fetchstr(uint64, char*, int);
 int             fetchaddr(uint64, uint64*);
 void            syscall();
-
-
 uint64          sys_pgaccess(void);
 
 // trap.c
@@ -184,7 +182,6 @@ int             copyinstr(pagetable_t, char *, uint64, uint64);
 
 void            vmprint(pagetable_t);
 
-uint64          sys_pgaccess(void);
 // plic.c
 void            plicinit(void);
 void            plicinithart(void);

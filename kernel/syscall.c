@@ -105,8 +105,6 @@ extern uint64 sys_trace(void);
 extern uint64 sys_ptree(void);
 extern uint64 sys_sysinfo(void);
 extern uint64 sys_pgaccess(void);
-extern uint64 sys_ptree(void);
-extern uint64 sys_pgaccess(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.

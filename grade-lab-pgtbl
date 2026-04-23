@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+
+from gradelib import *
+
+r = Runner(save("xv6.out"))
+
+@test(0, "pgtbltest")
+def test_pgtbltest():
+    r.run_qemu(shell_script([
+        'pgtbltest'
+    ]), timeout=300)
+
+@test(35, "pgtbltest: ugetpid", parent=test_pgtbltest)
+def test_ugetpid():
+    r.match(r'^ugetpid_test: OK$')
+
+@test(35, "pgtbltest: pgaccess", parent=test_pgtbltest)
+def test_pgaccess():
+    r.match(r'^pgaccess_test: OK$')
+    r.match(r'^pgtbltest: all tests succeeded$')
+
+@test(30, "vmprint")
+def test_vmprint():
+    r.run_qemu(shell_script([
+        'echo OK'
+    ]), timeout=60)
+    r.match(r'^page table 0x')
+    r.match(r'^\.\.')
+    r.match(r'^init: starting sh$')
+    r.match(r'^OK$')
+run_tests()

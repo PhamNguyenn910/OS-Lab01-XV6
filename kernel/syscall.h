@@ -24,5 +24,4 @@
 #define SYS_sysinfo 23
 #define SYS_ptree 24
 #define SYS_pgaccess 25
-#define SYS_ptree 24
-#define SYS_pgaccess 25
+

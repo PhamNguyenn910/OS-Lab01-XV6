@@ -144,6 +144,7 @@ found:
     return 0;
   }
 
+  memset(p->usyscall, 0, PGSIZE);
   p->usyscall->pid = p->pid;
 
   // An empty user page table.

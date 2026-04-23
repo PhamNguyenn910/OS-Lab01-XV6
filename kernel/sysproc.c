@@ -171,14 +171,24 @@ sys_pgaccess(void)
   if(npages < 0 || npages > 32)
     return -1;
 
-  for(int i = 0; i < npages; i++){
-    uint64 va = base + i * PGSIZE;
-    pte_t *pte = walk(p->pagetable, va, 0);
+  if(npages > 0){
+    if(base >= MAXVA)
+      return -1;
+    if(base + (uint64)(npages - 1) * PGSIZE < base)
+      return -1;
+  }
 
+  for(int i = 0; i < npages; i++){
+    uint64 va = base + (uint64)i * PGSIZE;
+
+    if(va >= MAXVA)
+      return -1;
+
+    pte_t *pte = walk(p->pagetable, va, 0);
     if(pte == 0)
       continue;
 
-    if((*pte & PTE_V) && (*pte & PTE_A)){
+    if((*pte & PTE_V) && (*pte & PTE_U) && (*pte & PTE_A)){
       mask |= (1U << i);
       *pte &= ~PTE_A;
     }
@@ -189,4 +199,3 @@ sys_pgaccess(void)
 
   return 0;
 }
-
