@@ -69,7 +69,7 @@ void tree(char *path, int level, int maxDepth, int onlyDir) {
             char name[DIRSIZ + 1];
             memmove(name, de.name, DIRSIZ);
             name[DIRSIZ] = 0;  // Null terminator
-            printf("|__ %s\n", de.name);
+            printf("|__ %s\n", name);
 
             // Gọi đệ quy cho thư mục con
             if(child_st.type == T_DIR){

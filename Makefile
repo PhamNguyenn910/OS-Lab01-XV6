@@ -194,14 +194,13 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
-	$U/_sleeptest\
+	$U/_sleep\
 	$U/_pingpong\
 	$U/_tree\
 	$U/_du\
 	$U/_diff\
 	$U/_cp\
-	$U/_primes\
-	$U/_demo_line
+	$U/_primes
 
 
 

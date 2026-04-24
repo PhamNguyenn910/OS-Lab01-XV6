@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
 
     // -s: Chỉ in ra duy nhất 1 con số tổng cộng ở bước cuối cùng
     if(flag_s) {
-        printf("%d\n", (int)total); // Output chỉ có số byte
+    printf("%d\t%s\n", (int)total, path);
     }
 
     exit(0);

@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/phamnguyen/Desktop/OS-Lab01-XV6-FINAL-DEMO",
+      "program": "/Users/phamnguyen/Desktop/OS-Lab01-XV6-FINAL-DEMO/build/Debug/outDebug"
+    }
+  ]
+}
